@@ -6,6 +6,8 @@ using Microsoft.Azure.Cosmos;
 using System;
 using BEPetProjectDemo.Domain;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using BEPetProjectDemo.Common.Model;
 
 namespace BEPetProjectDemo.DAL
 {
@@ -38,13 +40,23 @@ namespace BEPetProjectDemo.DAL
                 return PatientLogic.CreateResponse(data, responseMessage);
             }
         }
-        public async Task<IActionResult> UpdatePatient(PatientsInfo UpdPatient, string id, Microsoft.Azure.Cosmos.Container documentContainer)
-        {
+        public async Task<IActionResult> UpdatePatient(PatientsInfo data, string id, Microsoft.Azure.Cosmos.Container documentContainer)
+       {
+            PatientsInfo UpdPatient = await documentContainer.ReadItemAsync<PatientsInfo>(id, new PartitionKey(id));
+
+            if (data.MobileNumber != null)
+            {
+                UpdPatient.MobileNumber = data.MobileNumber;
+            }
+            if (data.Name != null)
+            {
+                UpdPatient.Name = data.Name;
+            }
             await documentContainer.UpsertItemAsync(UpdPatient);
             string UpdateMessage = "Updated a particular patient sucessfully";
             return PatientLogic.CreateResponse(UpdPatient, UpdateMessage);
         }
-
+ 
         public async Task<IActionResult> DeletePatient(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer)
         {
             await documentContainer.DeleteItemAsync<PatientsInfo>(id, new PartitionKey(id));

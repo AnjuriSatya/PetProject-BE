@@ -1,4 +1,5 @@
-﻿using BEPetProjectDemo.DAL;
+﻿using BEPetProjectDemo.Common.Model;
+using BEPetProjectDemo.DAL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
@@ -40,13 +41,7 @@ namespace BEPetProjectDemo.Domain
         }
         public async Task<IActionResult> UpdatePatient(PatientsInfo data, string id, Microsoft.Azure.Cosmos.Container documentContainer)
         {
-            PatientsInfo UpdPatient = await documentContainer.ReadItemAsync<PatientsInfo>(id, new PartitionKey(id));
-            UpdPatient.Name = data.Name ?? UpdPatient.Name;
-            UpdPatient.Age = data.Age ?? UpdPatient.Age;
-            UpdPatient.DOB = data.DOB ?? UpdPatient.DOB;
-            UpdPatient.Email = data.Email ?? UpdPatient.Email;
-            UpdPatient.Phone = data.Phone ?? UpdPatient.Phone;
-            return await _patientDAL.UpdatePatient(UpdPatient, id, documentContainer);
+            return await _patientDAL.UpdatePatient(data, id, documentContainer);
         }
         public async Task<IActionResult> DeletePatient(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer)
         {

@@ -16,6 +16,7 @@ using System.Net.Http;
 using BEPetProjectDemo.Domain;
 using System.Security.Policy;
 using System.Net;
+using BEPetProjectDemo.Common.Model;
 
 namespace BEPetProjectDemo
 {
@@ -67,7 +68,7 @@ namespace BEPetProjectDemo
 
         [FunctionName(HTTPFunctions.Create)]
         public async Task<IActionResult> CreatePatient(
-         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = HTTPRoutes.CreateRoute)] HttpRequestMessage req,
+         [HttpTrigger(AuthorizationLevel.Anonymous, HTTPMethods.POST, Route = HTTPRoutes.CreateRoute)] HttpRequestMessage req,
           ILogger log)
         {
             log.LogInformation("Creating a patient");
