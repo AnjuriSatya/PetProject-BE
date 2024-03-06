@@ -11,10 +11,10 @@ namespace BEPetProjectDemo.Domain
 {
     public interface IPatientDomain
     {
-        Task<IActionResult> GetallPatients(HttpRequestMessage req, IEnumerable<PatientsInfo> patient);
-        Task<IActionResult> GetPatientsById(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer);
-        Task<IActionResult> CreatePatient(PatientsInfo data, Microsoft.Azure.Cosmos.Container documentContainer);
-        Task<IActionResult> UpdatePatient(PatientsInfo data, string id, Microsoft.Azure.Cosmos.Container documentContainer);
-        Task<IActionResult> DeletePatient(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer);
+        Task<IActionResult> GetallPatients(HttpRequestMessage req);
+        Task<IActionResult> GetPatientsById(HttpRequestMessage req, string id);
+        Task<IActionResult> CreatePatient(PatientsInfo data);
+        Task<IActionResult> UpdatePatient(PatientsInfo data, string id);
+        Task<IActionResult> DeletePatient(HttpRequestMessage req, string id);
     }
 }

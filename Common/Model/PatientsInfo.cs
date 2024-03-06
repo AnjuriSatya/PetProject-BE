@@ -20,6 +20,7 @@ namespace BEPetProjectDemo.Common.Model
         public string Name { get; set; }
         [JsonProperty("Age")]
 
+
         public string Age { get; set; }
         [JsonProperty("DOB")]
         public string DOB { get; set; }

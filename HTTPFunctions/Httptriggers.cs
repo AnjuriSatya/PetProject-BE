@@ -17,35 +17,24 @@ using BEPetProjectDemo.Domain;
 using System.Security.Policy;
 using System.Net;
 using BEPetProjectDemo.Common.Model;
-
+using BEPetProjectDemo.Common;
 namespace BEPetProjectDemo
 {
     public class Httptriggers
     {
-        private const string DatabaseName = "PatientsDetails";
-        private const string CollectionName = "Patients";
-        private readonly CosmosClient _cosmosClient;
-        private readonly Container documentContainer;
         private readonly IPatientDomain _patientDomain;
-        public Httptriggers(CosmosClient cosmosClient,IPatientDomain patientDomain)
+        public Httptriggers(IPatientDomain patientDomain)
         {
-            _cosmosClient = cosmosClient;
-            documentContainer = _cosmosClient.GetContainer("PatientsDetails", "Patients");
             _patientDomain = patientDomain;
         }
         [FunctionName(HTTPFunctions.Get)]
         public async Task<IActionResult> GetallPatients(
                 [HttpTrigger(AuthorizationLevel.Anonymous, HTTPMethods.GET, Route = HTTPRoutes.GetRoute)] HttpRequestMessage req,
-                [CosmosDB(
-                DatabaseName,
-                CollectionName,
-                Connection ="CosmosDBConnectionString")]
-                IEnumerable<PatientsInfo> patient,
                 ILogger log)
-            
+
         {
             log.LogInformation("Getting list of all Patients ");
-            return await _patientDomain.GetallPatients(req, patient);
+            return await _patientDomain.GetallPatients(req);
         }
 
         [FunctionName(HTTPFunctions.GetById)]
@@ -56,13 +45,12 @@ namespace BEPetProjectDemo
             log.LogInformation($"Getting Patient with ID: {id}");
             try
             {
-                return await _patientDomain.GetPatientsById(req, id,documentContainer);
+                return await _patientDomain.GetPatientsById(req, id);
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 log.LogError($"Error getting patient with ID");
-                string errorMessage = "This particular id patient does not existing";
-                return PatientLogic.CreateBadResponse(errorMessage);
+                return PatientLogic.CreateBadResponse(Constants.GetByIdFailed);
             }
         }
 
@@ -77,12 +65,11 @@ namespace BEPetProjectDemo
 
             try
             {
-                return await _patientDomain.CreatePatient(data, documentContainer);
+                return await _patientDomain.CreatePatient(data);
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                string errorMessage = "Failed to create a patient";
-                return PatientLogic.CreateBadResponse(errorMessage);
+                return PatientLogic.CreateBadResponse(Constants.CreateFailed);
             }
         }
         [FunctionName(HTTPFunctions.Update)]
@@ -95,11 +82,11 @@ namespace BEPetProjectDemo
             var data = JsonConvert.DeserializeObject<PatientsInfo>(requestData);
             try
             {
-                return await _patientDomain.UpdatePatient(data, id, documentContainer);
+                return await _patientDomain.UpdatePatient(data, id);
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                string errorMessage = "This patient is not existing to update";
+                string errorMessage = Constants.FailedMessage +"Update";
                 return PatientLogic.CreateBadResponse(errorMessage);
             }
         }
@@ -111,11 +98,11 @@ namespace BEPetProjectDemo
             log.LogInformation($"Deleting Patient from the list with ID: {id}");
             try
             {
-                return await _patientDomain.DeletePatient(req, id, documentContainer);
+                return await _patientDomain.DeletePatient(req, id);
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                string errorMessage = "The patient is not in existing to delete ";
+                string errorMessage = Constants.FailedMessage + "Delete";
                 return PatientLogic.CreateBadResponse(errorMessage);
             }
         }

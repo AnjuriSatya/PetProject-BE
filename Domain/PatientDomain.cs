@@ -20,16 +20,16 @@ namespace BEPetProjectDemo.Domain
         {
             _patientDAL = patientDAL;
         }
-        public async Task<IActionResult> GetallPatients(HttpRequestMessage req, IEnumerable<PatientsInfo> patient)
+        public async Task<IActionResult> GetallPatients(HttpRequestMessage req)
         {
-         return await _patientDAL.GetallPatients(req, patient);
+         return await _patientDAL.GetallPatients(req);
         }
-        public async Task<IActionResult> GetPatientsById(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer)
+        public async Task<IActionResult> GetPatientsById(HttpRequestMessage req, string id)
         {
-            return await _patientDAL.GetPatientsById(req, id, documentContainer);
+            return await _patientDAL.GetPatientsById(req, id);
         }
 
-        public async Task<IActionResult> CreatePatient(PatientsInfo data, Microsoft.Azure.Cosmos.Container documentContainer)
+        public async Task<IActionResult> CreatePatient(PatientsInfo data)
         {
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(data, new ValidationContext(data), validationResults, true))
@@ -37,15 +37,15 @@ namespace BEPetProjectDemo.Domain
                 string invalidDataMessage = validationResults.Select(v => v.ErrorMessage).FirstOrDefault();
                 return PatientLogic.CreateBadResponse(invalidDataMessage);
             }
-            return await _patientDAL.CreatePatient(data, documentContainer);
+            return await _patientDAL.CreatePatient(data);
         }
-        public async Task<IActionResult> UpdatePatient(PatientsInfo data, string id, Microsoft.Azure.Cosmos.Container documentContainer)
+        public async Task<IActionResult> UpdatePatient(PatientsInfo data, string id)
         {
-            return await _patientDAL.UpdatePatient(data, id, documentContainer);
+            return await _patientDAL.UpdatePatient(data, id);
         }
-        public async Task<IActionResult> DeletePatient(HttpRequestMessage req, string id, Microsoft.Azure.Cosmos.Container documentContainer)
+        public async Task<IActionResult> DeletePatient(HttpRequestMessage req, string id)
         {
-            return await _patientDAL.DeletePatient(req, id, documentContainer);
+            return await _patientDAL.DeletePatient(req, id);
         }
     }
 }
